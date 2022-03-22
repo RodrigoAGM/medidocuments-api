@@ -4,6 +4,7 @@ import Cors from 'cors';
 import { json } from 'body-parser';
 import { config } from 'dotenv';
 import handleError from './middleware/error.middleware';
+import { manager } from './db/mongoose.manager';
 
 export default class App {
   private app: Application;
@@ -33,8 +34,15 @@ export default class App {
     this.app.use(handleError);
   }
 
-  async listen() {
-    this.app.listen(this.app.get('port'));
-    console.log('App listening to port', this.app.get('port'));
+  async start() {
+    try {
+      await manager.connect();
+      console.log('Database connected!');
+
+      this.app.listen(this.app.get('port'));
+      console.log('App listening to port', this.app.get('port'));
+    } catch (error) {
+      return Promise.reject(error);
+    }
   }
 }
