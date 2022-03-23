@@ -11,14 +11,12 @@ class MongooseManager {
         return Promise.reject(new Error('No database connection url was provided on .env file'));
       }
 
-      const conn = await mongoose.createConnection(dbUrl).asPromise();
+      await mongoose.connect(dbUrl);
 
-      if (conn.readyState === 1) {
-        return Promise.resolve('Database connected!');
-      }
-      return Promise.reject(new Error(`Error connecting to database, state code ${conn.readyState}`));
+      return Promise.resolve('Database connected!');
     } catch (error) {
-      return Promise.reject(error);
+      console.log(error);
+      return Promise.reject(new Error('Error connecting to database'));
     }
   }
 
