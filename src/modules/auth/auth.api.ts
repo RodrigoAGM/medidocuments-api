@@ -10,4 +10,14 @@ router.post(
   controller.handleSignIn
 );
 
+router.delete(
+  '/signout/:refreshToken',
+  controller.handleSignOut
+);
+
+router.post(
+  '/extend-token',
+  controller.handleRefreshToken
+);
+
 export { router as AuthApi };

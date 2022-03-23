@@ -22,4 +22,27 @@ export class AuthController {
       next(error);
     }
   }
+
+  handleSignOut = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { refreshToken } = req.params;
+      const data = await this.service.signOut(refreshToken);
+
+      res.status(200).send(data);
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+
+  handleRefreshToken = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await this.service.refreshToken(req.body);
+
+      res.status(200).send(clearData(data));
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
 }
