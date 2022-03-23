@@ -5,6 +5,8 @@ import { json } from 'body-parser';
 import { config } from 'dotenv';
 import handleError from './middleware/error.middleware';
 import { manager } from './db/mongoose.manager';
+import { UserApi } from './modules/user/user.api';
+import { AuthApi } from './modules/auth/auth.api';
 
 export default class App {
   private app: Application;
@@ -31,6 +33,8 @@ export default class App {
     this.app.get('/', json(), (req, res) => {
       res.send('Hello World!');
     });
+    this.app.use('/auth', json(), AuthApi);
+    this.app.use('/user', json(), UserApi);
     this.app.use(handleError);
   }
 

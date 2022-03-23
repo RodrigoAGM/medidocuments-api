@@ -9,7 +9,7 @@ export type Result<T> = {
 
 // Interface used to parse payload from token
 export type Payload = {
-  id: number,
+  id: string,
   dni: string,
   role: Role,
   iat?: number,
@@ -19,4 +19,15 @@ export type Payload = {
 export type UserTokens = {
   token: string;
   refreshToken: string;
+}
+
+export type MongoServerError = {
+  index: number,
+  code: number,
+  keyPattern: {
+    [key: string]: number
+  },
+  keyValue: {
+    [key: string]: string
+  }
 }
