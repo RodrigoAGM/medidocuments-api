@@ -13,8 +13,13 @@ export class ClaimController {
 
   handleGetAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { status, dni } = req.query;
-      const data = await this.service.getAll((status as string), (dni as string));
+      const {
+        status, dni, dateFrom, dateTo,
+      } = req.query;
+
+      const data = await this.service.getAll(
+        (status as string), (dni as string), (dateFrom as string), (dateTo as string)
+      );
       res.status(200).send(clearData(data));
     } catch (error) {
       next(error);
