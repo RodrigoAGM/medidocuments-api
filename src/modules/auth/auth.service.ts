@@ -4,7 +4,7 @@ import { ITokens, Tokens } from '../../models/token.model';
 import { IUser, User } from '../../models/user.model';
 import { tokenManager } from '../../token/token.manager';
 import { Result } from '../../types/types';
-import { handleAuthError } from './user.error';
+import { handleAuthError } from './auth.error';
 
 export class AuthService {
   async signIn(username: string, password: string): Promise<Result<IUser>> {

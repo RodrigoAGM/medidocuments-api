@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { ClaimStatus } from '../types/enums';
+import { IHospital } from './hospital.model';
 import { IUser } from './user.model';
 
 export interface IClaim {
@@ -11,6 +12,7 @@ export interface IClaim {
   lotNumber: number,
   patient: string | IUser,
   responsable?: string | IUser,
+  hospital: string | IHospital,
   status: ClaimStatus,
   comments: string,
   createdAt?: string,
@@ -27,6 +29,7 @@ const claimSchema = new Schema<IClaim>({
   comments: { type: String, required: false, default: '' },
   patient: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   responsable: { type: Schema.Types.ObjectId, ref: 'User', required: false },
+  hospital: { type: Schema.Types.ObjectId, ref: 'Hospital', required: true },
 }, { timestamps: true });
 
 export const Claim = mongoose.model<IClaim>('Claim', claimSchema);

@@ -1,6 +1,6 @@
 import AppError from '../../error/app.error';
 import { Claim, IClaim } from '../../models/claim.model';
-import { ClaimStatus } from '../../types/enums';
+import { ClaimStatus, Role } from '../../types/enums';
 import { Payload, Result } from '../../types/types';
 import { UserValidator } from '../user/user.validator';
 import { handleClaimError } from './claim.error';
@@ -13,6 +13,10 @@ export class ClaimService {
 
       // Set pending status
       data.status = ClaimStatus.PENDING;
+
+      // Get Hospital
+      const user = await UserValidator.exists(payload.id);
+      data.hospital = user.hospital;
 
       // Remove no necessary data
       data.comments = '';
@@ -28,7 +32,7 @@ export class ClaimService {
   }
 
   async getAll(
-    status?: string, dni?: string, dateFrom?: string, dateTo?: string
+    userId: string, status?: string, dni?: string, dateFrom?: string, dateTo?: string
   ): Promise<Result<IClaim[]>> {
     try {
       // Check if would filter by dates
@@ -57,18 +61,24 @@ export class ClaimService {
       const bothDates = parsedDateFrom && parsedDateTo;
 
       // Check if would filter by dni
-      let userId;
+      let patientId;
       if (dni) {
         const user = await UserValidator.findByDni(dni);
         if (user == null) {
           return Promise.resolve({ success: true, data: [] });
         }
-        userId = user._id;
+        patientId = user._id;
       }
 
+      // Get hospital id
+      // Only fetch claims from the workers hospital
+      const user = await UserValidator.exists(userId);
+      const hospitalId = user.hospital;
+
       const claims = await Claim.find({
+        hospital: hospitalId,
         ...(status ? { status } : {}),
-        ...(userId ? { patient: userId } : {}),
+        ...(patientId ? { patient: patientId } : {}),
         ...(bothDates ? { createdAt: { $gte: parsedDateFrom, $lte: parsedDateTo } } : {}),
         ...((parsedDateFrom && !bothDates) ? { createdAt: { $gte: parsedDateFrom } } : {}),
         ...((parsedDateTo && !bothDates) ? { createdAt: { $lte: parsedDateTo } } : {}),
@@ -80,9 +90,20 @@ export class ClaimService {
     }
   }
 
-  async getById(id: string): Promise<Result<IClaim>> {
+  async getById(id: string, userId: string): Promise<Result<IClaim>> {
     try {
-      const claim = await Claim.findById(id).populate(['patient', 'responsable']);
+      // Get Hospital
+      const user = await UserValidator.exists(userId);
+      const hospitalId = user.hospital;
+
+      const claim = await Claim.findOne({
+        _id: id,
+        ...(user.role === Role.PATIENT ? {
+          patient: userId,
+        } : {
+          hospital: hospitalId,
+        }),
+      }).populate(['patient', 'responsable', 'hospital']);
 
       if (claim == null) {
         return Promise.reject(new AppError({
@@ -114,8 +135,15 @@ export class ClaimService {
     newStatus: ClaimStatus,
   ): Promise<Result<IClaim>> {
     try {
+      // Get Hospital
+      const user = await UserValidator.exists(payload.id);
+      const hospitalId = user.hospital;
+
       // Get the claim
-      const claim = await Claim.findById(claimId);
+      const claim = await Claim.findOne({
+        _id: claimId,
+        hospital: hospitalId,
+      });
 
       if (claim === null) {
         return Promise.reject(new AppError(

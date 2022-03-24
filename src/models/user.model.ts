@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { genSalt, hash } from 'bcrypt';
 import { Role } from '../types/enums';
+import { IHospital } from './hospital.model';
 
 export interface IUser {
   _id: string,
@@ -12,6 +13,7 @@ export interface IUser {
   secondSurname: string,
   phone: string,
   email: string,
+  hospital: string | IHospital,
   secondEmail?: string,
   speciality?: string,
   birthDate: Date,
@@ -36,6 +38,7 @@ const userSchema = new Schema<IUser>({
   phone: { type: String, required: true },
   email: { type: String, required: true },
   role: { type: Number, enum: Role, required: true },
+  hospital: { type: Schema.Types.ObjectId, ref: 'Hospital', required: true },
   secondEmail: { type: String, required: false },
   speciality: { type: String, required: false },
   birthDate: { type: Date, required: true },
