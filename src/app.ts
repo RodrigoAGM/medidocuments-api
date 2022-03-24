@@ -7,6 +7,7 @@ import handleError from './middleware/error.middleware';
 import { manager } from './db/mongoose.manager';
 import { UserApi } from './modules/user/user.api';
 import { AuthApi } from './modules/auth/auth.api';
+import { ClaimApi } from './modules/claim/claim.api';
 
 export default class App {
   private app: Application;
@@ -35,6 +36,7 @@ export default class App {
     });
     this.app.use('/auth', json(), AuthApi);
     this.app.use('/user', json(), UserApi);
+    this.app.use('/claim', json(), ClaimApi);
     this.app.use(handleError);
   }
 
