@@ -27,4 +27,4 @@ router.post(
   controller.handleCreateHospital
 );
 
-export { router as HsopitalApi };
+export { router as HospitalApi };
