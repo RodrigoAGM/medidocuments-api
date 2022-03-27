@@ -15,3 +15,9 @@ export enum ClaimStatus {
     RESOLVED = 'ATENDIDO',
     REJECTED = 'RECHAZADO'
 }
+
+export enum PrescriptionStatus {
+    NONE = 'NO ATENDIDO',
+    PARTIAL = 'PARCIAL',
+    TOTAL = 'TOTAL'
+}

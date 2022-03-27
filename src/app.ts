@@ -10,6 +10,7 @@ import { AuthApi } from './modules/auth/auth.api';
 import { ClaimApi } from './modules/claim/claim.api';
 import { HospitalApi } from './modules/hospital/hospital.api';
 import { MedicineApi } from './modules/medicine/medicine.api';
+import { PrescriptionApi } from './modules/prescription/prescription.api';
 
 export default class App {
   private app: Application;
@@ -41,6 +42,7 @@ export default class App {
     this.app.use('/claim', json(), ClaimApi);
     this.app.use('/hospital', json(), HospitalApi);
     this.app.use('/medicine', json(), MedicineApi);
+    this.app.use('/prescription', json(), PrescriptionApi);
     this.app.use(handleError);
   }
 
