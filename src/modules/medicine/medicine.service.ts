@@ -7,14 +7,6 @@ import { handleMedicineError } from './medicine.error';
 export class MedicineService {
   async create(data: IMedicine, payload: Payload): Promise<Result<IMedicine>> {
     try {
-      // Check stock
-      if (!data.stock || data.stock === 0) {
-        return Promise.reject(new AppError({
-          message: 'El stock no puede ser 0.',
-          statusCode: 400,
-        }));
-      }
-
       // Get Hospital
       const user = await UserValidator.exists(payload.id);
       data.hospital = user.hospital;
@@ -28,10 +20,7 @@ export class MedicineService {
     }
   }
 
-  async getAllFromHospital(
-    payload: Payload,
-    available: boolean = false
-  ): Promise<Result<IMedicine[]>> {
+  async getAllFromHospital(payload: Payload): Promise<Result<IMedicine[]>> {
     try {
       // Get Hospital
       const user = await UserValidator.exists(payload.id);
@@ -39,7 +28,6 @@ export class MedicineService {
 
       const medicines = await Medicine.find({
         hospital: hospitalId,
-        ...(available ? { stock: { $gt: 0 } } : {}),
       });
 
       return Promise.resolve({ success: true, data: medicines });
@@ -49,7 +37,7 @@ export class MedicineService {
   }
 
   async searchFromHospital(
-    query: string, payload: Payload, available: boolean = false
+    query: string, payload: Payload,
   ): Promise<Result<IMedicine[]>> {
     try {
       // Get Hospital
@@ -59,7 +47,6 @@ export class MedicineService {
       const medicines = await Medicine.find({
         hospital: hospitalId,
         name: { $regex: query, $options: 'i' },
-        ...(available ? { stock: { $gt: 0 } } : {}),
       });
 
       return Promise.resolve({ success: true, data: medicines });
@@ -122,14 +109,6 @@ export class MedicineService {
       const user = await UserValidator.exists(payload.id);
       const hospitalId = user.hospital;
 
-      // Check stock
-      if (!data.stock || data.stock === 0) {
-        return Promise.reject(new AppError({
-          message: 'El stock no puede ser 0.',
-          statusCode: 400,
-        }));
-      }
-
       const medicine = await Medicine.findByIdAndUpdate({
         _id: id,
         hospital: hospitalId,
@@ -142,7 +121,6 @@ export class MedicineService {
         }));
       }
 
-      medicine.stock = data.stock ?? medicine.stock;
       medicine.name = data.name ?? medicine.name;
       medicine.description = data.description ?? medicine.description;
 

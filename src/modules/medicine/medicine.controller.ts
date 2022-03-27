@@ -13,10 +13,7 @@ export class MedicineController {
 
   handleGetAllFromHospital = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const availableVal = req.query.available;
-      const available = !!(availableVal && availableVal === 'true');
-
-      const data = await this.service.getAllFromHospital(req.payload, available);
+      const data = await this.service.getAllFromHospital(req.payload);
       res.status(200).send(clearData(data));
     } catch (error) {
       next(error);
