@@ -1,7 +1,9 @@
 import AppError from '../../error/app.error';
+import { IPrescriptionDetail } from '../../models/prescription.detail.model';
 import { Prescription, IPrescription } from '../../models/prescription.model';
 import { PrescriptionStatus, Role } from '../../types/enums';
 import { Payload, Result } from '../../types/types';
+import { MedicineValidator } from '../medicine/medicine.validator';
 import { UserValidator } from '../user/user.validator';
 import { handlePrescriptionError } from './prescription.error';
 
@@ -124,6 +126,87 @@ export class PrescriptionService {
       }).select('-detail');
 
       return Promise.resolve({ success: true, data: prescriptions });
+    } catch (error) {
+      return Promise.reject(handlePrescriptionError(error, 'Ocurrió un error al obtener las recetas.'));
+    }
+  }
+
+  async attendPrescription(
+    payload: Payload,
+    prescriptionId: string,
+    detail: IPrescriptionDetail[]
+  ): Promise<Result<IPrescription>> {
+    try {
+      if (!detail) {
+        return Promise.reject(new AppError({
+          message: 'El detalle enviado es incorrecto.',
+          statusCode: 400,
+        }));
+      }
+
+      // Get user
+      const user = await UserValidator.exists(payload.id);
+
+      // Get prescription
+      const prescription = await Prescription.findOne({
+        _id: prescriptionId,
+        hospital: user.hospital,
+      });
+
+      if (prescription == null) {
+        return Promise.reject(new AppError({
+          message: 'La receta no existe.',
+          statusCode: 404,
+        }));
+      }
+
+      let newStatus = PrescriptionStatus.TOTAL;
+      let error;
+
+      // Validate provided detail
+      for (let index = 0; index < prescription.detail.length; index += 1) {
+        // Check if item was provided on new detail
+        const item = prescription.detail[index];
+        const newItem = detail.find((value) => (value._id === item._id.toString()));
+
+        if (newItem === undefined) {
+          error = new AppError({
+            message: `El detalle para ${item.name} no fue enviado.`,
+            statusCode: 400,
+          });
+          break;
+        } else {
+          // Check provided data
+          if (!newItem.givenAmount || !newItem.givenMedicine
+            || newItem.givenAmount < 0 || newItem.givenAmount > item.requestedAmount) {
+            error = new AppError({
+              message: `El detalle para ${item.name} es incorrecto.`,
+              statusCode: 400,
+            });
+            break;
+          }
+          // Check if medicine exist
+          // eslint-disable-next-line no-await-in-loop
+          await MedicineValidator.exists(newItem.givenMedicine as string, user.hospital as string);
+
+          if (newItem.givenAmount < item.requestedAmount) {
+            newStatus = PrescriptionStatus.PARTIAL;
+          }
+          item.givenAmount = newItem.givenAmount;
+          item.givenMedicine = newItem.givenMedicine;
+        }
+      }
+
+      if (error) {
+        return Promise.reject(error);
+      }
+
+      // Update prescription
+      prescription.status = newStatus;
+
+      const res = await prescription.save();
+
+      return Promise.resolve({ success: true, data: res });
     } catch (error) {
       return Promise.reject(handlePrescriptionError(error, 'Ocurrió un error al obtener las recetas.'));
     }

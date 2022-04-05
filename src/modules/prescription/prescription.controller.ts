@@ -60,4 +60,15 @@ export class PrescriptionController {
       next(error);
     }
   }
+
+  handleAttendPrescription = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const { detail } = req.body;
+      const data = await this.service.attendPrescription(req.payload, id, detail);
+      res.status(200).send(clearData(data));
+    } catch (error) {
+      next(error);
+    }
+  }
 }

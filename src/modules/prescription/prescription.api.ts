@@ -29,6 +29,13 @@ router.get(
   controller.handleGetAllSelf
 );
 
+router.post(
+  '/attend/:id',
+  authenticateToken,
+  authenticateRole([Role.PHARMACY_ASSISTANT]),
+  controller.handleAttendPrescription
+);
+
 router.get(
   '/:id',
   authenticateToken,
