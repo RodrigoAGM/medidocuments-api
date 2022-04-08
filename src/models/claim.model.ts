@@ -3,8 +3,11 @@ import { ClaimStatus } from '../types/enums';
 import { IHospital } from './hospital.model';
 import { IUser } from './user.model';
 
+const AutoIncrement = require('mongoose-sequence')(mongoose);
+
 export interface IClaim {
   _id: string,
+  code?: number,
   ticketSerial: string,
   ticketCorrelative: string,
   prescriptionCode: string,
@@ -31,5 +34,7 @@ const claimSchema = new Schema<IClaim>({
   responsable: { type: Schema.Types.ObjectId, ref: 'User', required: false },
   hospital: { type: Schema.Types.ObjectId, ref: 'Hospital', required: true },
 }, { timestamps: true });
+
+claimSchema.plugin(AutoIncrement, { inc_field: 'code' });
 
 export const Claim = mongoose.model<IClaim>('Claim', claimSchema);
