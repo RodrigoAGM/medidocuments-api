@@ -16,8 +16,8 @@ export interface IPrescription {
   patient: string | IUser,
   doctor: string | IUser,
   hospital: string | IHospital,
-  ticketSerial: string,
-  ticketCorrelative: string,
+  ticketSerial?: string,
+  ticketCorrelative?: string,
 }
 
 const prescriptionSchema = new Schema<IPrescription>({
@@ -28,12 +28,8 @@ const prescriptionSchema = new Schema<IPrescription>({
   doctor: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   detail: [{ type: prescriptionDetailSchema, required: true }],
   hospital: { type: Schema.Types.ObjectId, ref: 'Hospital', required: true },
-  ticketSerial: {
-    type: String, required: true, minlength: 4, maxlength: 4,
-  },
-  ticketCorrelative: {
-    type: String, required: true, minlength: 4, maxlength: 4,
-  },
+  ticketSerial: { type: String, required: false },
+  ticketCorrelative: { type: String, required: false },
 }, { timestamps: true });
 
 prescriptionSchema.plugin(AutoIncrement, { inc_field: 'code' });
