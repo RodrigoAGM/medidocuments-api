@@ -8,6 +8,19 @@ import { UserController } from './user.controller';
 const router = Router();
 const controller = container.resolve(UserController);
 
+router.get(
+  '/self',
+  authenticateToken,
+  controller.handleGetSelf
+);
+
+router.get(
+  '/dni/:dni',
+  authenticateToken,
+  authenticateRole([Role.DOCTOR, Role.HOSPITAL_CHEMIST, Role.PHARMACY_ASSISTANT]),
+  controller.handleGetByDni
+);
+
 // Admin routes
 router.get(
   '/:id',

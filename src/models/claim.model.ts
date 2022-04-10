@@ -10,7 +10,7 @@ export interface IClaim {
   code?: number,
   ticketSerial: string,
   ticketCorrelative: string,
-  prescriptionCode: string,
+  prescriptionCode: number,
   detail: string,
   lotNumber: number,
   patient: string | IUser,
@@ -25,7 +25,7 @@ export interface IClaim {
 const claimSchema = new Schema<IClaim>({
   ticketSerial: { type: String, required: true },
   ticketCorrelative: { type: String, required: true },
-  prescriptionCode: { type: String, required: true },
+  prescriptionCode: { type: Number, required: true },
   lotNumber: { type: Number, required: true },
   detail: { type: String, required: true },
   status: { type: String, enum: ClaimStatus, required: true },
@@ -35,6 +35,6 @@ const claimSchema = new Schema<IClaim>({
   hospital: { type: Schema.Types.ObjectId, ref: 'Hospital', required: true },
 }, { timestamps: true });
 
-claimSchema.plugin(AutoIncrement, { inc_field: 'code' });
+claimSchema.plugin(AutoIncrement, { inc_field: 'code', id: 'claim_code' });
 
 export const Claim = mongoose.model<IClaim>('Claim', claimSchema);
