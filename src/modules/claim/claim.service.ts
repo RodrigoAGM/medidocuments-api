@@ -82,7 +82,7 @@ export class ClaimService {
         ...(bothDates ? { createdAt: { $gte: parsedDateFrom, $lte: parsedDateTo } } : {}),
         ...((parsedDateFrom && !bothDates) ? { createdAt: { $gte: parsedDateFrom } } : {}),
         ...((parsedDateTo && !bothDates) ? { createdAt: { $lte: parsedDateTo } } : {}),
-      });
+      }).sort({ createdAt: 'desc' });
 
       return Promise.resolve({ success: true, data: claims });
     } catch (error) {
@@ -120,7 +120,7 @@ export class ClaimService {
 
   async getSelfClaims(payload: Payload): Promise<Result<IClaim[]>> {
     try {
-      const claims = await Claim.find({ patient: payload.id });
+      const claims = await Claim.find({ patient: payload.id }).sort({ createdAt: 'desc' });
 
       return Promise.resolve({ success: true, data: claims });
     } catch (error) {

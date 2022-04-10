@@ -47,7 +47,7 @@ export class PrescriptionService {
 
       const prescriptions = await Prescription.find({
         hospital: user.hospital,
-      }).select('-detail');
+      }).select('-detail').sort({ createdAt: 'desc' });
 
       return Promise.resolve({ success: true, data: prescriptions });
     } catch (error) {
@@ -60,7 +60,7 @@ export class PrescriptionService {
       const prescriptions = await Prescription.find({
         ...(payload.role === Role.DOCTOR ? { doctor: payload.id } : {}),
         ...(payload.role === Role.PATIENT ? { patient: payload.id } : {}),
-      }).select('-detail');
+      }).select('-detail').sort({ createdAt: 'desc' });
 
       return Promise.resolve({ success: true, data: prescriptions });
     } catch (error) {
@@ -123,7 +123,7 @@ export class PrescriptionService {
         ...(payload.role === Role.DOCTOR ? { doctor: payload.id } : {}),
         ...(hospitalId ? { hospital: hospitalId } : {}),
         ...(status ? { status } : {}),
-      }).select('-detail');
+      }).select('-detail').sort({ createdAt: 'desc' });
 
       return Promise.resolve({ success: true, data: prescriptions });
     } catch (error) {
