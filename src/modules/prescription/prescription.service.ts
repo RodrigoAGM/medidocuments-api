@@ -13,6 +13,10 @@ export class PrescriptionService {
       data.doctor = payload.id;
       data.status = PrescriptionStatus.NONE;
 
+      // Remove no needed data
+      data.ticketCorrelative = undefined;
+      data.ticketSerial = undefined;
+
       // Validate detail
       if (!data.detail || !(data.detail instanceof Array) || data.detail.length === 0) {
         return Promise.reject(new AppError({
