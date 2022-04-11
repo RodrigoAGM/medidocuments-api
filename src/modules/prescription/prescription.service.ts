@@ -86,7 +86,7 @@ export class PrescriptionService {
         ...(payload.role === Role.DOCTOR ? { doctor: payload.id } : {}),
         ...(payload.role === Role.PATIENT ? { patient: payload.id } : {}),
         ...(hospitalId ? { hospital: hospitalId } : {}),
-      });
+      }).populate(['doctor', 'patient']);
 
       if (prescription == null) {
         return Promise.reject(new AppError({
