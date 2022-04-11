@@ -44,13 +44,54 @@ export class PrescriptionService {
     }
   }
 
-  async getAllFromHospital(userId: string): Promise<Result<IPrescription[]>> {
+  async getAllFromHospital(
+    userId: string, dni?: string, dateFrom?: string, dateTo?: string
+  ): Promise<Result<IPrescription[]>> {
     try {
+      // Check if would filter by dates
+      let parsedDateFrom;
+      if (dateFrom) {
+        const parsed = new Date(dateFrom);
+        if (Number.isNaN(parsed.getTime())) {
+          return Promise.reject(new AppError({
+            message: 'La fecha de inicio es inválida.', statusCode: 404,
+          }));
+        }
+        parsedDateFrom = parsed;
+      }
+
+      let parsedDateTo;
+      if (dateTo) {
+        const parsed = new Date(dateTo);
+        if (Number.isNaN(parsed.getTime())) {
+          return Promise.reject(new AppError({
+            message: 'La fecha de fin es inválida.', statusCode: 404,
+          }));
+        }
+        parsedDateTo = parsed;
+      }
+
+      const bothDates = parsedDateFrom && parsedDateTo;
+
+      // Check if would filter by dni
+      let patientId;
+      if (dni) {
+        const user = await UserValidator.findByDni(dni);
+        if (user == null) {
+          return Promise.resolve({ success: true, data: [] });
+        }
+        patientId = user._id;
+      }
+
       // Get Hospital
       const user = await UserValidator.exists(userId);
 
       const prescriptions = await Prescription.find({
         hospital: user.hospital,
+        ...(patientId ? { patient: patientId } : {}),
+        ...(bothDates ? { createdAt: { $gte: parsedDateFrom, $lte: parsedDateTo } } : {}),
+        ...((parsedDateFrom && !bothDates) ? { createdAt: { $gte: parsedDateFrom } } : {}),
+        ...((parsedDateTo && !bothDates) ? { createdAt: { $lte: parsedDateTo } } : {}),
       }).select('-detail').sort({ createdAt: 'desc' });
 
       return Promise.resolve({ success: true, data: prescriptions });

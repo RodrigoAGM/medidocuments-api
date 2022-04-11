@@ -23,7 +23,16 @@ export class PrescriptionController {
 
   handleGetAllFromHospital = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await this.service.getAllFromHospital(req.payload.id);
+      const {
+        dni, dateFrom, dateTo,
+      } = req.query;
+
+      const data = await this.service.getAllFromHospital(
+        req.payload.id,
+        (dni as string),
+        (dateFrom as string),
+        (dateTo as string),
+      );
       res.status(200).send(clearData(data));
     } catch (error) {
       next(error);
