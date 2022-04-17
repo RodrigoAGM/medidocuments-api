@@ -11,6 +11,8 @@
     "copy:package": "node -e \"require('fs').copyFile('./package.json', './dist/package.json', function(err) { if (err) console.log(err); console.log('package.json copied!') })\"",
     "postbuild": "yarn copy:package",
     "start": "node ./dist/index.js",
+    "admin": "node ./dist/enroll.admin.js",
+    "admin:dev": "ts-node ./src/enroll.admin.ts",
     "dev": "nodemon"
   },
   "dependencies": {

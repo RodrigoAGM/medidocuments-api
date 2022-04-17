@@ -105,3 +105,6 @@ dist
 
 .ds_store
 */.ds_store
+
+fabric.config.json
+gateway.connection.json

@@ -7,6 +7,12 @@ export type Result<T> = {
   params?: any;
 }
 
+export type ContractResult = {
+  success: boolean,
+  data?: {} | string,
+  error?: {} | string
+}
+
 // Interface used to parse payload from token
 export type Payload = {
   id: string,
