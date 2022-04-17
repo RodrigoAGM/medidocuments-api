@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { injectable } from 'tsyringe';
+import { Role } from '../../types/enums';
 import { clearData } from '../../utils/clear.response';
 import { RequirementService } from './requirement.service';
 
@@ -20,6 +21,15 @@ export class RequirementController {
     }
   }
 
+  handleGetAll = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await this.service.getAll(req.payload);
+      res.status(200).send(clearData(data));
+    } catch (error) {
+      next(error);
+    }
+  }
+
   handleGetAllFromHospital = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = await this.service.getAllFromHospital(req.payload);
@@ -29,9 +39,18 @@ export class RequirementController {
     }
   }
 
-  handleGetByIdFromHospital = async (req: Request, res: Response, next: NextFunction) => {
+  handleGetById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const data = await this.service.getByIdFromHospital(req.payload, req.params.requirementId);
+      const { payload } = req;
+
+      let data;
+
+      if (payload.role === Role.DIGEMID_CHEMIST) {
+        data = await this.service.getById(req.payload, req.params.requirementId);
+      } else {
+        data = await this.service.getByIdFromHospital(req.payload, req.params.requirementId);
+      }
+
       res.status(200).send(clearData(data));
     } catch (error) {
       next(error);

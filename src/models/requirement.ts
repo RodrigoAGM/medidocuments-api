@@ -1,3 +1,6 @@
+import { IHospital } from './hospital.model';
+import { IUser } from './user.model';
+
 export interface IRequirementDetail {
   amount: number,
   detail: string,
@@ -11,6 +14,8 @@ export interface IRequirement {
   chemistId: string,
   date: string,
   hospitalId: string,
+  hospital?: IHospital,
+  chemist?: IUser,
   id: string,
   remisionId?: string,
   type: string

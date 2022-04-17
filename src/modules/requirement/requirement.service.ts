@@ -1,4 +1,6 @@
-import { IRequirement } from '../../models/requirement.model';
+import { Hospital } from '../../models/hospital.model';
+import { IRequirement } from '../../models/requirement';
+import { User } from '../../models/user.model';
 import { FabricNetwork } from '../../network/network';
 import { Payload, Result } from '../../types/types';
 import { UserValidator } from '../user/user.validator';
@@ -33,9 +35,75 @@ export class RequirementService {
 
       const response = await FabricNetwork.invoke(network, true, 'createRequirement', args);
 
+      // Disconnect network
+      FabricNetwork.disconnect();
+
       return Promise.resolve(response);
     } catch (error) {
       return Promise.reject(handleRequirementError(error, 'Ocurrió un error al crear el requerimiento.'));
+    }
+  }
+
+  async getAll(payload: Payload): Promise<Result<IRequirement[]>> {
+    try {
+      // Check if chemist is registered on network
+      const chemistExist = await FabricNetwork.checkIfUserExists(payload.id);
+
+      if (!chemistExist) {
+        // If user chemist not exist, register chemist
+        await FabricNetwork.registerUser(payload.id);
+      }
+
+      const network = await FabricNetwork.connectToNetwork(payload.id);
+
+      const response = await FabricNetwork.invoke(network, true, 'getAllRequirements', []);
+
+      // Disconnect network
+      FabricNetwork.disconnect();
+
+      return Promise.resolve(response);
+    } catch (error) {
+      return Promise.reject(handleRequirementError(error, 'Ocurrió un error al obtener los requerimientos.'));
+    }
+  }
+
+  async getById(payload: Payload, id: string): Promise<Result<IRequirement>> {
+    try {
+      // Check if chemist is registered on network
+      const chemistExist = await FabricNetwork.checkIfUserExists(payload.id);
+
+      if (!chemistExist) {
+        // If user chemist not exist, register chemist
+        await FabricNetwork.registerUser(payload.id);
+      }
+
+      const network = await FabricNetwork.connectToNetwork(payload.id);
+
+      const args = [id];
+
+      const response = await FabricNetwork.invoke(network, true, 'getRequirementById', args);
+
+      // Disconnect network
+      FabricNetwork.disconnect();
+
+      // Get chemist data
+      const chemist = await User.findById(response.data?.chemistId ?? '');
+
+      // Get hospital data
+      const hospital = await Hospital.findById(response.data?.hospitalId ?? '');
+
+      const res: Result<IRequirement> = {
+        success: true,
+        data: {
+          ...response.data,
+          chemist,
+          hospital,
+        },
+      };
+
+      return Promise.resolve(res);
+    } catch (error) {
+      return Promise.reject(handleRequirementError(error, 'Ocurrió un error al obtener el requerimiento.'));
     }
   }
 
@@ -59,13 +127,16 @@ export class RequirementService {
 
       const response = await FabricNetwork.invoke(network, true, 'getAllRequirementsFromHospital', args);
 
+      // Disconnect network
+      FabricNetwork.disconnect();
+
       return Promise.resolve(response);
     } catch (error) {
       return Promise.reject(handleRequirementError(error, 'Ocurrió un error al obtener los requerimientos.'));
     }
   }
 
-  async getByIdFromHospital(payload: Payload, id: string): Promise<Result<IRequirement[]>> {
+  async getByIdFromHospital(payload: Payload, id: string): Promise<Result<IRequirement>> {
     try {
       // Get user hospital
       const userData = await UserValidator.exists(payload.id);
@@ -85,9 +156,27 @@ export class RequirementService {
 
       const response = await FabricNetwork.invoke(network, true, 'getRequirementByIdFromHospital', args);
 
-      return Promise.resolve(response);
+      // Disconnect network
+      FabricNetwork.disconnect();
+
+      // Get chemist data
+      const chemist = await User.findById(response.data?.chemistId ?? '');
+
+      // Get hospital data
+      const hospital = await Hospital.findById(hospitalId);
+
+      const res: Result<IRequirement> = {
+        success: true,
+        data: {
+          ...response.data,
+          chemist,
+          hospital,
+        },
+      };
+
+      return Promise.resolve(res);
     } catch (error) {
-      return Promise.reject(handleRequirementError(error, 'Ocurrió un error al obtener los requerimientos.'));
+      return Promise.reject(handleRequirementError(error, 'Ocurrió un error al obtener el requerimiento.'));
     }
   }
 }

@@ -16,6 +16,13 @@ router.post(
 );
 
 router.get(
+  '/',
+  authenticateToken,
+  authenticateRole([Role.DIGEMID_CHEMIST]),
+  controller.handleGetAll
+);
+
+router.get(
   '/self',
   authenticateToken,
   authenticateRole([Role.HOSPITAL_CHEMIST]),
@@ -25,8 +32,8 @@ router.get(
 router.get(
   '/:requirementId',
   authenticateToken,
-  authenticateRole([Role.HOSPITAL_CHEMIST]),
-  controller.handleGetByIdFromHospital
+  authenticateRole([Role.HOSPITAL_CHEMIST, Role.DIGEMID_CHEMIST]),
+  controller.handleGetById
 );
 
 export { router as RequirementApi };
