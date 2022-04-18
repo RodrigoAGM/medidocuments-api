@@ -22,4 +22,4 @@ router.get(
   controller.handleGetById
 );
 
-export { router as RequirementApi };
+export { router as RemisionApi };

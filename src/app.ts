@@ -12,6 +12,7 @@ import { HospitalApi } from './modules/hospital/hospital.api';
 import { MedicineApi } from './modules/medicine/medicine.api';
 import { PrescriptionApi } from './modules/prescription/prescription.api';
 import { RequirementApi } from './modules/requirement/requirement.api';
+import { RemisionApi } from './modules/remision/remision.api';
 
 export default class App {
   private app: Application;
@@ -45,6 +46,7 @@ export default class App {
     this.app.use('/medicine', json(), MedicineApi);
     this.app.use('/prescription', json(), PrescriptionApi);
     this.app.use('/requirement', json(), RequirementApi);
+    this.app.use('/remision', json(), RemisionApi);
     this.app.use(handleError);
   }
 
