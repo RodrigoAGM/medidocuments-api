@@ -28,9 +28,9 @@ export class RemisionController {
       let data;
 
       if (payload.role === Role.DIGEMID_CHEMIST) {
-        data = await this.service.getById(req.payload, req.params.requirementId);
+        data = await this.service.getById(req.payload, req.params.remisionId);
       } else {
-        data = await this.service.getByIdFromHospital(req.payload, req.params.requirementId);
+        data = await this.service.getByIdFromHospital(req.payload, req.params.remisionId);
       }
 
       res.status(200).send(clearData(data));
