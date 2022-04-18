@@ -56,7 +56,7 @@ export class RequirementService {
 
       const network = await FabricNetwork.connectToNetwork(payload.id);
 
-      const response = await FabricNetwork.invoke(network, true, 'getAllRequirements', []);
+      const response = await FabricNetwork.invoke(network, false, 'getAllRequirements', []);
 
       // Disconnect network
       FabricNetwork.disconnect();
@@ -81,7 +81,7 @@ export class RequirementService {
 
       const args = [id];
 
-      const response = await FabricNetwork.invoke(network, true, 'getRequirementById', args);
+      const response = await FabricNetwork.invoke(network, false, 'getRequirementById', args);
 
       // Disconnect network
       FabricNetwork.disconnect();
@@ -125,7 +125,7 @@ export class RequirementService {
 
       const args = [hospitalId];
 
-      const response = await FabricNetwork.invoke(network, true, 'getAllRequirementsFromHospital', args);
+      const response = await FabricNetwork.invoke(network, false, 'getAllRequirementsFromHospital', args);
 
       // Disconnect network
       FabricNetwork.disconnect();
@@ -154,7 +154,7 @@ export class RequirementService {
 
       const args = [id, hospitalId];
 
-      const response = await FabricNetwork.invoke(network, true, 'getRequirementByIdFromHospital', args);
+      const response = await FabricNetwork.invoke(network, false, 'getRequirementByIdFromHospital', args);
 
       // Disconnect network
       FabricNetwork.disconnect();

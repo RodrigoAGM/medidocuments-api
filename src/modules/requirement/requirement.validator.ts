@@ -45,7 +45,7 @@ class RequirementValidatorClass {
 
       return Promise.resolve(verified);
     } catch (error) {
-      return Promise.reject(handleRequirementError(error, 'Ocurrió un error al validar la medicina.'));
+      return Promise.reject(handleRequirementError(error, 'Ocurrió un error al validar el requerimiento.'));
     }
   }
 
