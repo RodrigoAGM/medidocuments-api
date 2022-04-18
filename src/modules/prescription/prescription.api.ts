@@ -32,7 +32,7 @@ router.get(
 router.post(
   '/attend/:id',
   authenticateToken,
-  authenticateRole([Role.PHARMACY_ASSISTANT]),
+  authenticateRole([Role.PHARMACY_ASSISTANT, Role.HOSPITAL_CHEMIST]),
   controller.handleAttendPrescription
 );
 
