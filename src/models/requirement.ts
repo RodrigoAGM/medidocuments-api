@@ -13,6 +13,7 @@ export interface IRequirementDetail {
 export interface IRequirement {
   chemistId: string,
   date: string,
+  confirmed: boolean,
   hospitalId: string,
   hospital?: IHospital,
   chemist?: IUser,

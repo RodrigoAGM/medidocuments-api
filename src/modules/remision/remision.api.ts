@@ -15,6 +15,13 @@ router.post(
   controller.handleCreateRemision
 );
 
+router.put(
+  '/:remisionId/confirm',
+  authenticateToken,
+  authenticateRole([Role.HOSPITAL_CHEMIST]),
+  controller.handleConfirmRemision
+);
+
 router.get(
   '/:remisionId',
   authenticateToken,

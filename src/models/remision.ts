@@ -16,6 +16,7 @@ export interface IRemision {
   digemidChemistId: string,
   date: string,
   hospitalId: string,
+  observations: string,
   hospital?: IHospital,
   digemidChemist?: IUser,
   requirementId: string,

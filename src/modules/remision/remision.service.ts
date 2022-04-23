@@ -9,7 +9,7 @@ import { RemisionValidator } from './remision.validator';
 import { IRemision } from '../../models/remision';
 
 export class RemisionService {
-  async create(payload: Payload, data: IRemisionCreate): Promise<Result<IRemision>> {
+  async create(payload: Payload, data: IRemisionCreate): Promise<Result<string>> {
     try {
       // Add data to transaction
       data.digemidChemistId = payload.id;
@@ -29,6 +29,39 @@ export class RemisionService {
       const args = [JSON.stringify(validated)];
 
       const response = await FabricNetwork.invoke(network, true, 'createRemision', args);
+
+      // Disconnect network
+      FabricNetwork.disconnect();
+
+      return Promise.resolve(response);
+    } catch (error) {
+      return Promise.reject(handleRemisionError(error, 'Ocurrió un error al crear la guía de remisión.'));
+    }
+  }
+
+  async confirm(
+    payload: Payload,
+    remisionId: string,
+    observations: string
+  ): Promise<Result<string>> {
+    try {
+      // Get user hospital
+      const userData = await UserValidator.exists(payload.id);
+      const hospitalId = userData.hospital as string;
+
+      // Check if chemist is registered on network
+      const chemistExist = await FabricNetwork.checkIfUserExists(payload.id);
+
+      if (!chemistExist) {
+        // If user chemist not exist, register chemist
+        await FabricNetwork.registerUser(payload.id);
+      }
+
+      const network = await FabricNetwork.connectToNetwork(payload.id);
+
+      const args = [remisionId, hospitalId, observations];
+
+      const response = await FabricNetwork.invoke(network, true, 'confirmRemision', args);
 
       // Disconnect network
       FabricNetwork.disconnect();
@@ -103,7 +136,7 @@ export class RemisionService {
       FabricNetwork.disconnect();
 
       // Get chemist data
-      const digemidChemistId = await User.findById(response.data?.digemidChemistId ?? '');
+      const digemidChemist = await User.findById(response.data?.digemidChemistId ?? '');
 
       // Get hospital data
       const hospital = await Hospital.findById(hospitalId);
@@ -112,7 +145,7 @@ export class RemisionService {
         success: true,
         data: {
           ...response.data,
-          digemidChemistId,
+          digemidChemist,
           hospital,
         },
       };

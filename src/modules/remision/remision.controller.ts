@@ -21,6 +21,17 @@ export class RemisionController {
     }
   }
 
+  handleConfirmRemision = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { observations } = req.body;
+
+      const data = await this.service.confirm(req.payload, req.params.remisionId, observations);
+      res.status(201).send(clearData(data));
+    } catch (error) {
+      next(error);
+    }
+  }
+
   handleGetById = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { payload } = req;
