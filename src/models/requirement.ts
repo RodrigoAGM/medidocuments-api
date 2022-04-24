@@ -19,6 +19,7 @@ export interface IRequirement {
   chemist?: IUser,
   id: string,
   remisionId?: string,
+  technicalDocumentId?: string,
   type: string
   detail?: IRequirementDetail[]
 }
