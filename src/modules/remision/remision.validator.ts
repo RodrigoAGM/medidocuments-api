@@ -16,7 +16,7 @@ class RemisionValidatorClass {
 
       if (!data.detail || data.detail.length === 0) {
         return Promise.reject(new AppError({
-          message: 'No se envio un detalle de requerimiento',
+          message: 'No se envio un detalle de remision',
           statusCode: 400,
         }));
       }
