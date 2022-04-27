@@ -1,4 +1,5 @@
 import AppError from '../../error/app.error';
+import { Medicine } from '../../models/medicine.model';
 import { IPrescriptionDetail } from '../../models/prescription.detail.model';
 import { Prescription, IPrescription } from '../../models/prescription.model';
 import { PrescriptionStatus, Role } from '../../types/enums';
@@ -252,6 +253,44 @@ export class PrescriptionService {
       const res = await prescription.save();
 
       return Promise.resolve({ success: true, data: res });
+    } catch (error) {
+      return Promise.reject(handlePrescriptionError(error, 'Ocurrió un error al obtener las recetas.'));
+    }
+  }
+
+  async getAllByMedicineLot(payload: Payload, lotNumber: number): Promise<Result<IPrescription[]>> {
+    try {
+      // Get Hospital
+      const user = await UserValidator.exists(payload.id);
+      const hospitalId = user.hospital;
+      console.log(hospitalId);
+      const result = await Medicine.aggregate([
+        {
+          $match: {
+            ...(user.role === Role.PATIENT ? { lotNumber } : {
+              $and: [{ lotNumber }, { hospital: hospitalId }],
+            }),
+          },
+        },
+        {
+          $lookup: {
+            from: 'prescriptions',
+            localField: '_id',
+            foreignField: 'detail.givenMedicine',
+            as: 'prescriptions',
+            ...(user.role === Role.PATIENT ? {
+              pipeline: [{ $match: { patient: user._id } }],
+            } : {}),
+          },
+        },
+      ]).exec();
+
+      if (result.length === 0) {
+        return Promise.resolve({ success: true, data: [] });
+      }
+
+      const data = (result[0].prescriptions) ?? [];
+      return Promise.resolve({ success: true, data });
     } catch (error) {
       return Promise.reject(handlePrescriptionError(error, 'Ocurrió un error al obtener las recetas.'));
     }

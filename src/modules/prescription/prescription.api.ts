@@ -50,4 +50,11 @@ router.get(
   controller.handleGetFromPatient
 );
 
+router.get(
+  '/lot/:lotNumber',
+  authenticateToken,
+  authenticateRole([Role.PATIENT, Role.PHARMACY_ASSISTANT, Role.HOSPITAL_CHEMIST]),
+  controller.handleGetByMedicineLot
+);
+
 export { router as PrescriptionApi };
