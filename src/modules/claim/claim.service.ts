@@ -128,6 +128,27 @@ export class ClaimService {
     }
   }
 
+  async getClaimsByLotNumber(payload: Payload, lotNumber: number): Promise<Result<IClaim[]>> {
+    try {
+      // Get Hospital
+      const user = await UserValidator.exists(payload.id);
+      const hospitalId = user.hospital;
+
+      const claims = await Claim.find({
+        lotNumber,
+        ...(user.role === Role.PATIENT ? {
+          patient: payload.id,
+        } : {
+          hospital: hospitalId,
+        }),
+      }).sort({ createdAt: 'desc' });
+
+      return Promise.resolve({ success: true, data: claims });
+    } catch (error) {
+      return Promise.reject(handleClaimError(error, 'Ocurrió un error al obtener los reclamos.'));
+    }
+  }
+
   async atendClaim(
     payload: Payload,
     claimId: string,

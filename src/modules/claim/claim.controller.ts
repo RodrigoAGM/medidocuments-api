@@ -67,4 +67,15 @@ export class ClaimController {
       next(error);
     }
   }
+
+  handleGetClaimsByLotNumber = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await this.service.getClaimsByLotNumber(
+        req.payload, Number(req.params.lotNumber ?? '-1')
+      );
+      res.status(200).send(clearData(data));
+    } catch (error) {
+      next(error);
+    }
+  }
 }

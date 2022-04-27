@@ -43,4 +43,11 @@ router.post(
   controller.handleCreateClaim
 );
 
+router.get(
+  '/lot/:lotNumber',
+  authenticateToken,
+  authenticateRole([Role.PHARMACY_ASSISTANT, Role.HOSPITAL_CHEMIST, Role.PATIENT]),
+  controller.handleGetClaimsByLotNumber
+);
+
 export { router as ClaimApi };
