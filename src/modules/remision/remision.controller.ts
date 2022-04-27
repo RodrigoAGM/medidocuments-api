@@ -49,4 +49,13 @@ export class RemisionController {
       next(error);
     }
   }
+
+  handleGetByLotNumber = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = await this.service.getByLotNumber(req.payload, req.params.lotNumber);
+      res.status(200).send(clearData(data));
+    } catch (error) {
+      next(error);
+    }
+  }
 }

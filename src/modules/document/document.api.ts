@@ -18,7 +18,7 @@ router.post(
 router.get(
   '/:remisionId',
   authenticateToken,
-  authenticateRole([Role.HOSPITAL_CHEMIST, Role.DIGEMID_CHEMIST]),
+  authenticateRole([Role.HOSPITAL_CHEMIST, Role.DIGEMID_CHEMIST, Role.PHARMACY_ASSISTANT]),
   controller.handleGetById
 );
 

@@ -25,8 +25,17 @@ router.put(
 router.get(
   '/:remisionId',
   authenticateToken,
-  authenticateRole([Role.HOSPITAL_CHEMIST, Role.DIGEMID_CHEMIST]),
+  authenticateRole([
+    Role.HOSPITAL_CHEMIST, Role.DIGEMID_CHEMIST, Role.PHARMACY_ASSISTANT,
+  ]),
   controller.handleGetById
+);
+
+router.get(
+  '/lot/:lotNumber',
+  authenticateToken,
+  authenticateRole([Role.HOSPITAL_CHEMIST, Role.PHARMACY_ASSISTANT]),
+  controller.handleGetByLotNumber
 );
 
 export { router as RemisionApi };

@@ -155,4 +155,54 @@ export class RemisionService {
       return Promise.reject(handleRemisionError(error, 'Ocurrió un error al obtener la guía de remisión.'));
     }
   }
+
+  async getByLotNumber(
+    payload: Payload, lotNumber: string
+  ): Promise<Result<IRemision | undefined>> {
+    try {
+      // Get user hospital
+      const userData = await UserValidator.exists(payload.id);
+      const hospitalId = userData.hospital as string;
+
+      // Check if chemist is registered on network
+      const chemistExist = await FabricNetwork.checkIfUserExists(payload.id);
+
+      if (!chemistExist) {
+        // If user chemist not exist, register chemist
+        await FabricNetwork.registerUser(payload.id);
+      }
+
+      const network = await FabricNetwork.connectToNetwork(payload.id);
+
+      const args = [hospitalId, lotNumber];
+
+      const response = await FabricNetwork.invoke(network, false, 'getRemisiontByLotNumber', args);
+
+      // Disconnect network
+      FabricNetwork.disconnect();
+
+      if (!response.data) {
+        return Promise.resolve({ success: true, data: undefined });
+      }
+
+      // Get chemist data
+      const digemidChemist = await User.findById(response.data?.digemidChemistId ?? '');
+
+      // Get hospital data
+      const hospital = await Hospital.findById(response.data?.hospitalId ?? '');
+
+      const res: Result<IRemision> = {
+        success: true,
+        data: {
+          ...response.data,
+          digemidChemist,
+          hospital,
+        },
+      };
+
+      return Promise.resolve(res);
+    } catch (error) {
+      return Promise.reject(handleRemisionError(error, 'Ocurrió un error al obtener la guía de remisión.'));
+    }
+  }
 }
