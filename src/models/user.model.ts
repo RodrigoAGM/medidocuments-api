@@ -11,12 +11,12 @@ export interface IUser {
   name: string,
   firstSurname: string,
   secondSurname: string,
-  phone: string,
+  phone?: string,
   email: string,
   hospital: string | IHospital,
   secondEmail?: string,
   speciality?: string,
-  birthDate: Date,
+  birthDate?: Date,
   role: Role
 }
 
@@ -35,13 +35,13 @@ const userSchema = new Schema<IUser>({
   name: { type: String, required: true },
   firstSurname: { type: String, required: true },
   secondSurname: { type: String, required: true },
-  phone: { type: String, required: true },
+  phone: { type: String, required: false },
   email: { type: String, required: true },
   role: { type: Number, enum: Role, required: true },
   hospital: { type: Schema.Types.ObjectId, ref: 'Hospital', required: true },
   secondEmail: { type: String, required: false },
   speciality: { type: String, required: false },
-  birthDate: { type: Date, required: true },
+  birthDate: { type: Date, required: false },
 });
 
 // eslint-disable-next-line func-names
