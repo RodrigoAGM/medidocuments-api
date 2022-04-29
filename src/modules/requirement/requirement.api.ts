@@ -25,7 +25,7 @@ router.get(
 router.get(
   '/self',
   authenticateToken,
-  authenticateRole([Role.HOSPITAL_CHEMIST]),
+  authenticateRole([Role.HOSPITAL_CHEMIST, Role.PHARMACY_ASSISTANT]),
   controller.handleGetAllFromHospital
 );
 
