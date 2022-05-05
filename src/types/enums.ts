@@ -21,3 +21,8 @@ export enum PrescriptionStatus {
     PARTIAL = 'PARCIAL',
     TOTAL = 'TOTAL'
 }
+
+export enum ConditionsBase {
+    FRIDGE = 'REFRIGERADOR',
+    SHELF = 'ESTANTE',
+}
