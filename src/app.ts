@@ -15,6 +15,7 @@ import { RequirementApi } from './modules/requirement/requirement.api';
 import { RemisionApi } from './modules/remision/remision.api';
 import { DocumentApi } from './modules/document/document.api';
 import { ConditionApi } from './modules/condition/condition.api';
+import { SignatureApi } from './modules/signature/signature.api';
 
 export default class App {
   private app: Application;
@@ -51,6 +52,7 @@ export default class App {
     this.app.use('/remision', json(), RemisionApi);
     this.app.use('/document', json(), DocumentApi);
     this.app.use('/condition', json(), ConditionApi);
+    this.app.use('/signature', json({ limit: '5mb' }), SignatureApi);
     this.app.use(handleError);
   }
 
