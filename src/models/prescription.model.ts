@@ -2,6 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import { PrescriptionStatus } from '../types/enums';
 import { IHospital } from './hospital.model';
 import { IPrescriptionDetail, prescriptionDetailSchema } from './prescription.detail.model';
+import { ISignature } from './signature.model';
 import { IUser } from './user.model';
 
 const AutoIncrement = require('mongoose-sequence')(mongoose);
@@ -18,6 +19,7 @@ export interface IPrescription {
   hospital: string | IHospital,
   ticketSerial?: string,
   ticketCorrelative?: string,
+  signature: string | ISignature,
 }
 
 const prescriptionSchema = new Schema<IPrescription>({
@@ -28,6 +30,7 @@ const prescriptionSchema = new Schema<IPrescription>({
   doctor: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   detail: [{ type: prescriptionDetailSchema, required: true }],
   hospital: { type: Schema.Types.ObjectId, ref: 'Hospital', required: true },
+  signature: { type: Schema.Types.ObjectId, ref: 'Signature', required: true },
   ticketSerial: { type: String, required: false },
   ticketCorrelative: { type: String, required: false },
 }, { timestamps: true });

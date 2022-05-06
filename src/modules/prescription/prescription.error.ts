@@ -4,7 +4,7 @@ import AppError from '../../error/app.error';
 export function handlePrescriptionError(error: any, defValue: string): AppError {
   let message = defValue;
   let statusCode = 500;
-
+  console.log(error);
   if (error instanceof AppError) {
     return error;
   }

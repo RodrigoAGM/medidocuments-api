@@ -2,6 +2,7 @@ import AppError from '../../error/app.error';
 import { Medicine } from '../../models/medicine.model';
 import { IPrescriptionDetail } from '../../models/prescription.detail.model';
 import { Prescription, IPrescription } from '../../models/prescription.model';
+import { Signature } from '../../models/signature.model';
 import { PrescriptionStatus, Role } from '../../types/enums';
 import { Payload, Result } from '../../types/types';
 import { MedicineValidator } from '../medicine/medicine.validator';
@@ -11,8 +12,18 @@ import { handlePrescriptionError } from './prescription.error';
 export class PrescriptionService {
   async create(data: IPrescription, payload: Payload): Promise<Result<IPrescription>> {
     try {
+      const signature = await Signature.findOne({ user: payload.id });
+
+      if (!signature) {
+        return Promise.reject(new AppError({
+          message: 'Debes configurar una firma para continuar.',
+          statusCode: 400,
+        }));
+      }
+
       data.doctor = payload.id;
       data.status = PrescriptionStatus.NONE;
+      data.signature = signature.id;
 
       // Remove no needed data
       data.ticketCorrelative = undefined;
@@ -128,7 +139,7 @@ export class PrescriptionService {
         ...(payload.role === Role.DOCTOR ? { doctor: payload.id } : {}),
         ...(payload.role === Role.PATIENT ? { patient: payload.id } : {}),
         ...(hospitalId ? { hospital: hospitalId } : {}),
-      }).populate(['doctor', 'patient', 'detail.givenMedicine']);
+      }).populate(['doctor', 'patient', 'detail.givenMedicine', 'signature']);
 
       if (prescription == null) {
         return Promise.reject(new AppError({
