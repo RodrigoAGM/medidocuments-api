@@ -1,4 +1,5 @@
 import { IHospital } from './hospital.model';
+import { ISignature } from './signature.model';
 import { IUser } from './user.model';
 
 export interface IRemisionDetail {
@@ -18,6 +19,8 @@ export interface IRemision {
   hospitalId: string,
   observations: string,
   hospital?: IHospital,
+  chemistSignature?: string | ISignature
+  digemidSignature?: string | ISignature
   digemidChemist?: IUser,
   requirementId: string,
   type: string

@@ -1,5 +1,7 @@
+import AppError from '../../error/app.error';
 import { Hospital } from '../../models/hospital.model';
 import { IRequirement } from '../../models/requirement';
+import { Signature } from '../../models/signature.model';
 import { User } from '../../models/user.model';
 import { FabricNetwork } from '../../network/network';
 import { Payload, Result } from '../../types/types';
@@ -15,9 +17,19 @@ export class RequirementService {
       const userData = await UserValidator.exists(payload.id);
       const hospitalId = userData.hospital;
 
+      const signature = await Signature.findOne({ user: payload.id });
+
+      if (!signature) {
+        return Promise.reject(new AppError({
+          message: 'Debes configurar una firma para continuar.',
+          statusCode: 400,
+        }));
+      }
+
       // Add data to transaction
       data.chemistId = payload.id;
       data.hospitalId = (hospitalId as string);
+      data.chemistSignature = signature.id;
 
       const validated = await RequirementValidator.validateCreateInput(data);
 
@@ -92,6 +104,12 @@ export class RequirementService {
       // Get hospital data
       const hospital = await Hospital.findById(response.data?.hospitalId ?? '');
 
+      // Get signatures
+      if (response.data?.chemistSignature) {
+        const chemistSignature = await Signature.findById(response.data?.chemistSignature);
+        response.data.chemistSignature = chemistSignature;
+      }
+
       const res: Result<IRequirement> = {
         success: true,
         data: {
@@ -164,6 +182,12 @@ export class RequirementService {
 
       // Get hospital data
       const hospital = await Hospital.findById(hospitalId);
+
+      // Get signatures
+      if (response.data?.chemistSignature) {
+        const chemistSignature = await Signature.findById(response.data?.chemistSignature);
+        response.data.chemistSignature = chemistSignature;
+      }
 
       const res: Result<IRequirement> = {
         success: true,

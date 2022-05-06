@@ -1,4 +1,5 @@
 import { IHospital } from './hospital.model';
+import { ISignature } from './signature.model';
 import { IUser } from './user.model';
 
 export interface IRequirementDetail {
@@ -18,6 +19,7 @@ export interface IRequirement {
   hospital?: IHospital,
   chemist?: IUser,
   id: string,
+  chemistSignature?: string | ISignature
   remisionId?: string,
   technicalDocumentId?: string,
   type: string

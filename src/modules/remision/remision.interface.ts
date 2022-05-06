@@ -9,5 +9,6 @@ export interface IRemisionCreate {
   digemidChemistId: string,
   hospitalId: string,
   requirementId: string,
+  digemidSignature: string,
   detail: IRemisionCreateDetail[]
 }

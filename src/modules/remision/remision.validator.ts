@@ -50,6 +50,7 @@ class RemisionValidatorClass {
         hospitalId: data.hospitalId,
         requirementId: data.requirementId,
         detail: verifiedDetail,
+        digemidSignature: data.digemidSignature,
       };
 
       return Promise.resolve(verified);

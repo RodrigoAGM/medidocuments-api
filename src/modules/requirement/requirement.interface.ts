@@ -7,5 +7,6 @@ export interface IRequirementCreateDetail {
 export interface IRequirementCreate {
   chemistId: string,
   hospitalId: string,
+  chemistSignature: string,
   detail: IRequirementCreateDetail[]
 }

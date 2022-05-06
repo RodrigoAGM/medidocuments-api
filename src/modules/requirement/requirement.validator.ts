@@ -40,6 +40,7 @@ class RequirementValidatorClass {
       const verified: IRequirementCreate = {
         chemistId: data.chemistId,
         hospitalId: data.hospitalId,
+        chemistSignature: data.chemistSignature,
         detail: verifiedDetail,
       };
 
