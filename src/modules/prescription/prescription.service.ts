@@ -191,7 +191,9 @@ export class PrescriptionService {
   async attendPrescription(
     payload: Payload,
     prescriptionId: string,
-    detail: IPrescriptionDetail[]
+    detail: IPrescriptionDetail[],
+    ticketCorrelative: string,
+    ticketSerial: string,
   ): Promise<Result<IPrescription>> {
     try {
       if (!detail) {
@@ -260,11 +262,14 @@ export class PrescriptionService {
 
       // Update prescription
       prescription.status = newStatus;
+      prescription.ticketCorrelative = ticketCorrelative;
+      prescription.ticketSerial = ticketSerial;
 
       const res = await prescription.save();
 
       return Promise.resolve({ success: true, data: res });
     } catch (error) {
+      console.log(error);
       return Promise.reject(handlePrescriptionError(error, 'Ocurrió un error al obtener las recetas.'));
     }
   }

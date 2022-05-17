@@ -73,8 +73,10 @@ export class PrescriptionController {
   handleAttendPrescription = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { id } = req.params;
-      const { detail } = req.body;
-      const data = await this.service.attendPrescription(req.payload, id, detail);
+      const { detail, ticketCorrelative, ticketSerial } = req.body;
+      const data = await this.service.attendPrescription(
+        req.payload, id, detail, ticketCorrelative, ticketSerial
+      );
       res.status(200).send(clearData(data));
     } catch (error) {
       next(error);
